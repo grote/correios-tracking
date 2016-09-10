@@ -1,0 +1,15 @@
+[correios]
+# enter your tracking codes here separated by space
+codes = RT999999999HK CL999999999FR RT999999998HK
+
+[email]
+# the sender email address
+from = cron@example.com
+# the recipient email address
+to = me@example.com
+
+[misc]
+# only change those if you know what you are doing
+quiet = true
+debug = false
+filename = data.json
