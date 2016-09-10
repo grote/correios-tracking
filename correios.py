@@ -10,9 +10,10 @@ import smtplib
 from email.mime.text import MIMEText
 
 config = configparser.ConfigParser()
-config.read("config.ini")
+config.read(os.path.dirname(__file__) + "/config.ini")
 quiet = config.getboolean("misc", "quiet", fallback=True)
 debug = config.getboolean("misc", "debug", fallback=False)
+filename = os.path.dirname(__file__) + "/" + config.get("misc", "filename")
 
 
 def main():
@@ -53,24 +54,25 @@ def notify(code, evento):
         "description": evento["descricao"],
         "from_name": evento["unidade"]["local"],
         "from_lat": evento["unidade"]["endereco"]["latitude"],
-        "from_lon": evento["unidade"]["endereco"]["longitude"],
-        "to_name": evento["destino"][0]["local"],
-        "to_lat": evento["destino"][0]["endereco"]["latitude"],
-        "to_lon": evento["destino"][0]["endereco"]["longitude"]
+        "from_lon": evento["unidade"]["endereco"]["longitude"]
     }
+    if "destino" in evento:
+        event["to_name"] = evento["destino"][0]["local"]
+        event["to_lat"] = evento["destino"][0]["endereco"]["latitude"]
+        event["to_lon"] = evento["destino"][0]["endereco"]["longitude"]
     send_email(event)
 
 
 def get_old_data_from_file():
-    if os.access(config.get("misc", "filename"), os.R_OK):
-        with open(config.get("misc", "filename"), 'r') as outfile:
+    if os.access(filename, os.R_OK):
+        with open(filename, 'r') as outfile:
             return json.load(outfile)
     else:
         return {}
 
 
 def save_data_to_file(data):
-    with open(config.get("misc", "filename"), 'w') as outfile:
+    with open(filename, 'w') as outfile:
         json.dump(data, outfile, indent=4)
 
 
@@ -108,7 +110,10 @@ def send_email(event):
 From
 %(from_name)s
 http://www.openstreetmap.org/?mlat=%(from_lat)s&mlon=%(from_lon)s
+''' % event
 
+    if "to_name" in event:
+        body += '''
 To
 %(to_name)s
 http://www.openstreetmap.org/?mlat=%(to_lat)s&mlon=%(to_lon)s
