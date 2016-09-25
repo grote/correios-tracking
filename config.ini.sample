@@ -4,7 +4,7 @@ codes = RT999999999HK CL999999999FR RT999999998HK
 
 [email]
 # the sender email address
-from = cron@example.com
+from = Correios Tracking <cron@example.com>
 # the recipient email address
 to = me@example.com
 

@@ -29,7 +29,7 @@ def main():
     for objeto in result["objeto"]:
         numero = objeto["numero"]
         evento = objeto["evento"][0]
-        this_update = datetime.strptime(evento["criacao"], "%m%d%Y%H%M%S")
+        this_update = datetime.strptime(evento["criacao"], "%d%m%Y%H%M%S")
         if numero in data:
             last_update = datetime.fromtimestamp(data[numero]["last_update"])
             if last_update >= this_update:
@@ -50,7 +50,7 @@ def notify(code, evento):
         print("We have a new event! Notify about it...")
     event = {
         "code": code,
-        "date": datetime.strptime(evento["criacao"], "%m%d%Y%H%M%S"),
+        "date": datetime.strptime(evento["criacao"], "%d%m%Y%H%M%S"),
         "description": evento["descricao"],
         "from_name": evento["unidade"]["local"],
         "from_lat": evento["unidade"]["endereco"]["latitude"],
