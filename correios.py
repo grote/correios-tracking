@@ -23,6 +23,8 @@ def main():
         print("Fetching data from Correios...")
     codes = config.get("correios", "codes").split()
     result = get_data_from_correios(codes)
+    if result is None:
+        return
     if debug:
         print(json.dumps(result, indent=4))
 
@@ -95,8 +97,18 @@ def get_data_from_correios(objetos):
         'Accept': 'application/json',
         'User-Agent': 'Dalvik/1.6.0 (Linux; U; Android 4.2.1; LG-P875h Build/JZO34L)'
     }
-    result = requests.post(url, data=request_xml, headers=headers).text
-    return json.loads(result)
+    try:
+        result = requests.post(url, data=request_xml, headers=headers).text
+    except TimeoutError as e:
+        if not quiet:
+            print(e)
+        return None
+    try:
+        return json.loads(result)
+    except ValueError as e:
+        if not quiet:
+            print(e)
+        return None
 
 
 def send_email(event):
