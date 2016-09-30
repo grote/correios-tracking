@@ -60,8 +60,10 @@ def notify(code, evento):
     }
     if "destino" in evento:
         event["to_name"] = evento["destino"][0]["local"]
-        event["to_lat"] = evento["destino"][0]["endereco"]["latitude"]
-        event["to_lon"] = evento["destino"][0]["endereco"]["longitude"]
+        endereco = evento["destino"][0]["endereco"]
+        if "latitude" in endereco and "longitude" in endereco:
+            event["to_lat"] = endereco["latitude"]
+            event["to_lon"] = endereco["longitude"]
     send_email(event)
 
 
@@ -117,19 +119,13 @@ def send_email(event):
     subject = "[%(code)s] %(description)s" % event
     if debug:
         print("Subject: %s" % subject)
-    body = '''%(date)s
-
-From
-%(from_name)s
-http://www.openstreetmap.org/?mlat=%(from_lat)s&mlon=%(from_lon)s
-''' % event
-
+    body = "%(date)s\n\n\nFrom\n%(from_name)s" % event
+    if "from_lat" in event and "from_lon" in event:
+        body += "\nhttp://www.openstreetmap.org/?mlat=%(from_lat)s&mlon=%(from_lon)s" % event
     if "to_name" in event:
-        body += '''
-To
-%(to_name)s
-http://www.openstreetmap.org/?mlat=%(to_lat)s&mlon=%(to_lon)s
-''' % event
+        body += "\n\nTo\n%(to_name)s" % event
+        if "to_lat" in event and "to_lon" in event:
+            body += "http://www.openstreetmap.org/?mlat=%(to_lat)s&mlon=%(to_lon)s" % event
     if debug:
         print("Body: %s" % body)
 
