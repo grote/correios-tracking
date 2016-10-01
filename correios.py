@@ -101,7 +101,7 @@ def get_data_from_correios(objetos):
     }
     try:
         result = requests.post(url, data=request_xml, headers=headers).text
-    except TimeoutError as e:
+    except requests.exceptions.ConnectionError as e:
         if not quiet:
             print(e)
         return None
