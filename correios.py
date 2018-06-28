@@ -30,6 +30,8 @@ def main():
 
     for objeto in result["objeto"]:
         numero = objeto["numero"]
+        if "evento" not in objeto:
+            continue
         evento = objeto["evento"][0]
         this_update = datetime.strptime(evento["criacao"], "%d%m%Y%H%M%S")
         if numero in data:
